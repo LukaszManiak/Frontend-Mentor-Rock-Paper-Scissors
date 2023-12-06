@@ -51,6 +51,8 @@ body {
   width: 40%;
   padding: 1rem;
 
+  margin-top: 5%;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -76,12 +78,12 @@ body {
   top: 50%;
   transform: translate(50%, -50%);
 
-  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 60%;
   height: 50%;
-
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url("./images/bg-triangle.svg");
 }
 
 .game-option {
@@ -90,10 +92,31 @@ body {
   padding: 3rem;
   cursor: pointer;
 
-  position: absolute;
-  top: 10%;
-  right: 25%;
-  transform: translate(25%, -25%);
+  transition: all ease-in-out 0.15s;
+}
+
+.rock:hover {
+  box-shadow: 0px 0px 0px 8px hsl(349, 71%, 52%);
+}
+
+.rock.selected {
+  box-shadow: 0px 0px 0px 8px hsl(349, 71%, 52%);
+}
+
+.paper:hover {
+  box-shadow: 0px 0px 0px 8px hsl(230, 89%, 62%);
+}
+
+.paper.selected {
+  box-shadow: 0px 0px 0px 8px hsl(230, 89%, 62%);
+}
+
+.scissors:hover {
+  box-shadow: 0px 0px 0px 8px hsl(39, 89%, 49%);
+}
+
+.scissors.selected {
+  box-shadow: 0px 0px 0px 8px hsl(39, 89%, 49%);
 }
 
 .rules-modal {
@@ -149,7 +172,20 @@ body {
 }
 
 .close-button {
-  border: none;
   background-color: transparent;
   cursor: pointer;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 16px;
+  transition: all ease-in-out 0.15s;
+}
+.close-button:hover {
+  box-shadow: 0px 0px 0px 4px var(--darkText);
 }

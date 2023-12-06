@@ -13,6 +13,13 @@ import iconPaper from "./images/icon-paper.svg";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [playerPick, setPlayerPick] = useState("");
+
+  function handlePlayerPick(pick) {
+    const selectedPick = pick;
+    setPlayerPick(selectedPick);
+    console.log(selectedPick);
+  }
 
   function handleOpenCloseClick() {
     setIsOpen(!isOpen);
@@ -21,7 +28,7 @@ function App() {
   return (
     <div className="app">
       <ScoreHeader />
-      <GameBoard />
+      <GameBoard playerPick={playerPick} onPlayerPick={handlePlayerPick} />
       <RulesModal isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
       <RulesButton isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
       {isOpen && <div className="dark-bg"></div>}
@@ -44,10 +51,30 @@ function ScoreHeader() {
   );
 }
 
-function GameBoard() {
+function GameBoard({ playerPick, onPlayerPick }) {
   return (
     <div className="game-board">
-      <GameOption />
+      <GameOption
+        pick={"rock"}
+        className={playerPick === "rock" ? "rock selected" : "rock"}
+        onClick={onPlayerPick}
+        icon={iconRock}
+        alt={"rock option"}
+      />
+      <GameOption
+        pick={"paper"}
+        className={playerPick === "paper" ? "paper selected" : "paper"}
+        onClick={onPlayerPick}
+        icon={iconPaper}
+        alt={"paper option"}
+      />
+      <GameOption
+        pick={"scissors"}
+        className={playerPick === "scissors" ? "scissors selected" : "scissors"}
+        onClick={onPlayerPick}
+        icon={iconScissors}
+        alt={"scissors option"}
+      />
     </div>
   );
 }
@@ -58,8 +85,6 @@ function GameStep3() {}
 function GameStep4() {}
 
 function RulesButton({ isOpen, onOpenClose }) {
-  console.log(isOpen);
-
   return (
     <Button className={"rules-button"} onClick={onOpenClose}>
       RULES
@@ -85,10 +110,14 @@ function RulesModal({ isOpen, onOpenClose }) {
   );
 }
 
-function GameOption() {
+function GameOption({ icon, alt, onClick, pick, className }) {
   return (
-    <Button className={"game-option"}>
-      <img src={iconScissors} alt="rock icon" />
+    <Button
+      pick={pick}
+      onClick={() => onClick(pick)}
+      className={`game-option ${className}`}
+    >
+      <img src={icon} alt={alt} />
     </Button>
   );
 }
