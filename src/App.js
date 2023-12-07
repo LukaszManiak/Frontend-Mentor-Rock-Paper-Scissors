@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 // images import
 import logoSvg from "./images/logo.svg";
@@ -11,24 +11,81 @@ import iconRock from "./images/icon-rock.svg";
 import iconScissors from "./images/icon-scissors.svg";
 import iconPaper from "./images/icon-paper.svg";
 
+const houseOptions = ["rock", "paper", "scissors"];
+
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const [playerPick, setPlayerPick] = useState("");
 
+  const [playerScore, setPlayerScore] = useState(0);
+  const [playerPick, setPlayerPick] = useState("");
+  const [housePick, setHousePick] = useState("");
+  const [result, setResult] = useState("");
+
+  // player pick
   function handlePlayerPick(pick) {
     const selectedPick = pick;
     setPlayerPick(selectedPick);
-    console.log(selectedPick);
+
+    handleHousePick();
+    handleResult();
+    handleScore();
   }
 
+  // open/close modal window
   function handleOpenCloseClick() {
     setIsOpen(!isOpen);
   }
 
+  // house pick
+  function handleHousePick() {
+    const randomSlot = Math.floor(Math.random() * houseOptions.length);
+    const randomPick = houseOptions[randomSlot];
+    setHousePick(randomPick);
+  }
+
+  console.log(playerPick, housePick, result);
+
+  function handlePlayAgain() {
+    setPlayerPick("");
+    setHousePick("");
+    setResult("");
+  }
+
+  // ????
+  // setting result
+  function handleResult() {
+    const player = playerPick;
+    const house = housePick;
+
+    player === house && setResult("draw");
+    player === "rock" && house === "paper" && setResult("lose");
+    player === "rock" && house === "scissors" && setResult("win");
+
+    player === "paper" && house === "scissors" && setResult("lose");
+    player === "paper" && house === "rock" && setResult("win");
+
+    player === "scissors" && house === "paper" && setResult("win");
+    player === "scissors" && house === "rock" && setResult("lose");
+  }
+  // setting score
+  function handleScore() {
+    result === "win" && setPlayerScore((s) => s + 1);
+    result === "lose" && setPlayerScore((s) => s - 1);
+    result === "draw" && setPlayerScore((s) => s + 0);
+  }
+
   return (
     <div className="app">
-      <ScoreHeader />
-      <GameBoard playerPick={playerPick} onPlayerPick={handlePlayerPick} />
+      <ScoreHeader score={playerScore} />
+      <GameBoard
+        playerPick={playerPick}
+        onPlayerPick={handlePlayerPick}
+        housePick={housePick}
+        result={result}
+        onPlayAgain={handlePlayAgain}
+      />
+
+      {/* modal */}
       <RulesModal isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
       <RulesButton isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
       {isOpen && <div className="dark-bg"></div>}
@@ -36,7 +93,7 @@ function App() {
   );
 }
 
-function ScoreHeader() {
+function ScoreHeader({ score }) {
   return (
     <div className="score-header">
       <div className="header-left">
@@ -45,15 +102,35 @@ function ScoreHeader() {
 
       <div className="header-right">
         <p>SCORE</p>
-        <p>12</p>
+        <p>{score}</p>
       </div>
     </div>
   );
 }
 
-function GameBoard({ playerPick, onPlayerPick }) {
+function GameBoard({
+  playerPick,
+  onPlayerPick,
+  housePick,
+  result,
+  onPlayAgain,
+}) {
   return (
     <div className="game-board">
+      <GamePickStep playerPick={playerPick} onPlayerPick={onPlayerPick} />
+      <GameResult
+        onPlayAgain={onPlayAgain}
+        playerPick={playerPick}
+        housePick={housePick}
+        result={result}
+      />
+    </div>
+  );
+}
+
+function GamePickStep({ playerPick, onPlayerPick }) {
+  return (
+    <>
       <GameOption
         pick={"rock"}
         className={playerPick === "rock" ? "rock selected" : "rock"}
@@ -75,14 +152,36 @@ function GameBoard({ playerPick, onPlayerPick }) {
         icon={iconScissors}
         alt={"scissors option"}
       />
-    </div>
+    </>
   );
 }
-
-function GameStep1() {}
-function GameStep2() {}
-function GameStep3() {}
-function GameStep4() {}
+function GameResult({
+  playerPick,
+  onPlayerPick,
+  housePick,
+  result,
+  onPlayAgain,
+}) {
+  return (
+    <>
+      <div>
+        <p>YOU PICKED</p>
+        <SelectedOption pick={playerPick} />
+      </div>
+      <div>
+        {result === "win" && <p>YOU WON</p>}
+        {result === "draw" && <p>DRAW</p>}
+        {result === "lose" && <p>YOU LOSE</p>}
+        <Button onClick={onPlayAgain}>PLAY AGAIN</Button>
+      </div>
+      <div>
+        <p>THE HOUSE PICKED</p>
+        {/* <div className="empty-slot"></div> */}
+        <SelectedOption pick={housePick} />
+      </div>
+    </>
+  );
+}
 
 function RulesButton({ isOpen, onOpenClose }) {
   return (
@@ -119,6 +218,30 @@ function GameOption({ icon, alt, onClick, pick, className }) {
     >
       <img src={icon} alt={alt} />
     </Button>
+  );
+}
+
+function SelectedOption({ pick }) {
+  return (
+    <>
+      {pick === "scissors" && (
+        <Button className={`scissors selected`}>
+          <img src={iconScissors} alt={"scissors icon"} />
+        </Button>
+      )}
+
+      {pick === "paper" && (
+        <Button className={`paper selected`}>
+          <img src={iconPaper} alt={"paper icon"} />
+        </Button>
+      )}
+
+      {pick === "rock" && (
+        <Button className={`rock selected`}>
+          <img src={iconRock} alt={"rock icon"} />
+        </Button>
+      )}
+    </>
   );
 }
 
