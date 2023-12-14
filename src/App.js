@@ -15,26 +15,29 @@ const houseOptions = ["rock", "paper", "scissors"];
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [playerScore, setPlayerScore] = useState(0);
+  const [playerScore, setPlayerScore] = useState(() => {
+    // getting score from local storage
+    const storedScore = localStorage.getItem("score");
+    return JSON.parse(storedScore);
+  });
   const [playerPick, setPlayerPick] = useState("");
   const [housePick, setHousePick] = useState("");
   const [result, setResult] = useState("");
-
-  // player pick
-  function handlePlayerPick(pick) {
-    const selectedPick = pick;
-    setPlayerPick(selectedPick);
-
-    handleHousePick();
-    handleResult();
-    handleScore();
-  }
+  const [mobileView, setMobileView] = useState(false);
 
   // open/close modal window
   function handleOpenCloseClick() {
     setIsOpen(!isOpen);
   }
+  // player pick
+  function handlePlayerPick(pick) {
+    const selectedPick = pick;
+    setPlayerPick((s) => selectedPick);
+
+    handleHousePick();
+  }
+
+  console.log(playerScore);
 
   // house pick
   function handleHousePick() {
@@ -43,41 +46,79 @@ function App() {
     setHousePick(randomPick);
   }
 
-  console.log(playerPick, housePick, result);
-
   function handlePlayAgain() {
     setPlayerPick("");
     setHousePick("");
     setResult("");
   }
 
-  // ????
-  // setting result
-  function handleResult() {
-    const player = playerPick;
-    const house = housePick;
-
-    player === house && setResult("draw");
-    player === "rock" && house === "paper" && setResult("lose");
-    player === "rock" && house === "scissors" && setResult("win");
-
-    player === "paper" && house === "scissors" && setResult("lose");
-    player === "paper" && house === "rock" && setResult("win");
-
-    player === "scissors" && house === "paper" && setResult("win");
-    player === "scissors" && house === "rock" && setResult("lose");
+  function handleResetPoints() {
+    setPlayerScore(0);
   }
-  // setting score
-  function handleScore() {
-    result === "win" && setPlayerScore((s) => s + 1);
-    result === "lose" && setPlayerScore((s) => s - 1);
-    result === "draw" && setPlayerScore((s) => s + 0);
-  }
+
+  // handling screen size change
+  useEffect(function () {
+    function handleMobileView() {
+      if (window.innerWidth >= 606) {
+        setMobileView(true);
+      } else {
+        setMobileView(false);
+      }
+    }
+
+    handleMobileView();
+
+    window.addEventListener("resize", handleMobileView);
+
+    return () => {
+      window.removeEventListener("resize", handleMobileView);
+    };
+  }, []);
+
+  // handling score and result
+  useEffect(
+    function () {
+      function handleResultAndScore() {
+        // handling result
+
+        if (playerPick === housePick) {
+          setResult("draw");
+        } else if (
+          // win options
+          (playerPick === "rock" && housePick === "scissors") ||
+          (playerPick === "paper" && housePick === "rock") ||
+          (playerPick === "scissors" && housePick === "paper")
+        ) {
+          setResult("win");
+          // setting score
+          setPlayerScore((s) => s + 1);
+        } else {
+          setResult("lose");
+          // setting score
+          setPlayerScore((s) => s - 1);
+        }
+      }
+
+      handleResultAndScore();
+    },
+    [housePick, playerPick]
+  );
+
+  console.log(result);
+
+  // setting localStorage score points
+  useEffect(
+    function () {
+      localStorage.setItem("score", JSON.stringify(playerScore));
+    },
+    [playerScore]
+  );
 
   return (
     <div className="app">
       <ScoreHeader score={playerScore} />
       <GameBoard
+        mobileView={mobileView}
         playerPick={playerPick}
         onPlayerPick={handlePlayerPick}
         housePick={housePick}
@@ -88,6 +129,7 @@ function App() {
       {/* modal */}
       <RulesModal isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
       <RulesButton isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
+      <ResetPointsButton onResetPoints={handleResetPoints} />
       {isOpen && <div className="dark-bg"></div>}
     </div>
   );
@@ -114,16 +156,23 @@ function GameBoard({
   housePick,
   result,
   onPlayAgain,
+  mobileView,
 }) {
   return (
     <div className="game-board">
-      <GamePickStep playerPick={playerPick} onPlayerPick={onPlayerPick} />
-      <GameResult
-        onPlayAgain={onPlayAgain}
-        playerPick={playerPick}
-        housePick={housePick}
-        result={result}
-      />
+      {!playerPick && (
+        <GamePickStep playerPick={playerPick} onPlayerPick={onPlayerPick} />
+      )}
+
+      {playerPick && (
+        <GameResult
+          mobileView={mobileView}
+          onPlayAgain={onPlayAgain}
+          playerPick={playerPick}
+          housePick={housePick}
+          result={result}
+        />
+      )}
     </div>
   );
 }
@@ -161,24 +210,44 @@ function GameResult({
   housePick,
   result,
   onPlayAgain,
+  mobileView,
 }) {
   return (
     <>
-      <div>
-        <p>YOU PICKED</p>
-        <SelectedOption pick={playerPick} />
+      <div className="result-container">
+        <div>
+          <p>YOU PICKED</p>
+          <SelectedOption pick={playerPick} />
+        </div>
+        {mobileView && (
+          <div>
+            {result === "win" && <p>YOU WON</p>}
+            {result === "draw" && <p>DRAW</p>}
+            {result === "lose" && <p>YOU LOSE</p>}
+
+            <Button className={"play-again-btn"} onClick={onPlayAgain}>
+              PLAY AGAIN
+            </Button>
+          </div>
+        )}
+        <div>
+          <p>THE HOUSE PICKED</p>
+          {/* <div className="empty-slot"></div> */}
+          <SelectedOption pick={housePick} />
+        </div>
       </div>
-      <div>
-        {result === "win" && <p>YOU WON</p>}
-        {result === "draw" && <p>DRAW</p>}
-        {result === "lose" && <p>YOU LOSE</p>}
-        <Button onClick={onPlayAgain}>PLAY AGAIN</Button>
-      </div>
-      <div>
-        <p>THE HOUSE PICKED</p>
-        {/* <div className="empty-slot"></div> */}
-        <SelectedOption pick={housePick} />
-      </div>
+
+      {!mobileView && (
+        <div className="reuslt-button-container">
+          {result === "win" && <p>YOU WON</p>}
+          {result === "draw" && <p>DRAW</p>}
+          {result === "lose" && <p>YOU LOSE</p>}
+
+          <Button className={"play-again-btn"} onClick={onPlayAgain}>
+            PLAY AGAIN
+          </Button>
+        </div>
+      )}
     </>
   );
 }
@@ -187,6 +256,14 @@ function RulesButton({ isOpen, onOpenClose }) {
   return (
     <Button className={"rules-button"} onClick={onOpenClose}>
       RULES
+    </Button>
+  );
+}
+
+function ResetPointsButton({ onResetPoints }) {
+  return (
+    <Button className={"reset-score-button"} onClick={onResetPoints}>
+      RESET POINTS
     </Button>
   );
 }
@@ -247,7 +324,7 @@ function SelectedOption({ pick }) {
 
 function Button({ children, className, onClick }) {
   return (
-    <button onClick={onClick} className={className}>
+    <button onClick={() => onClick()} className={className}>
       {children}
     </button>
   );

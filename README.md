@@ -23,6 +23,8 @@ Users should be able to:
 
 - View the optimal layout for the game depending on their device's screen size
 - Play Rock, Paper, Scissors against the computer
+- Option to store the score inside local storage.
+- Option to restart overall score.
 
 ### Links
 
