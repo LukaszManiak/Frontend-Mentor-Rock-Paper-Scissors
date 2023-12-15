@@ -28,8 +28,8 @@ Users should be able to:
 
 ### Links
 
-<!-- - Solution URL: [GitHub](https://github.com/LukaszManiak/Frontend-Mentor-REST-Countries)
-- Live Site URL: [Netlify](https://lukas-rest-countries.netlify.app/) -->
+- Solution URL: [GitHub](https://github.com/LukaszManiak/Frontend-Mentor-REST-Countries)
+- Live Site URL: [Netlify](https://lukas-rock-paper-scissors.netlify.app/)
 
 ### Built with
 
