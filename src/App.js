@@ -4,7 +4,6 @@ import "./App.css";
 import logoSvg from "./images/logo.svg";
 import rulesImage from "./images/image-rules.svg";
 import closeIcon from "./images/icon-close.svg";
-import bgTriangle from "./images/bg-triangle.svg";
 
 // option icons
 import iconRock from "./images/icon-rock.svg";
