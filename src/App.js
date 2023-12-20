@@ -321,7 +321,7 @@ function SelectedOption({ pick }) {
   );
 }
 
-function Button({ children, className, onClick }) {
+function Button({ children, className, onClick = () => {} }) {
   return (
     <button onClick={() => onClick()} className={className}>
       {children}
