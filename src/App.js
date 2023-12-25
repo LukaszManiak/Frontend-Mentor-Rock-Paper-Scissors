@@ -115,6 +115,7 @@ function App() {
 
   return (
     <div className="app">
+      <div className="overlay"></div>
       <ScoreHeader score={playerScore} />
       <GameBoard
         mobileView={mobileView}

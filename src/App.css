@@ -96,6 +96,7 @@ body {
   height: 180px;
 
   transition: all ease-in-out 0.15s;
+  animation: up-slide 0.3s ease-in forwards;
 }
 
 .empty-slot {
@@ -188,6 +189,12 @@ body {
   border: solid 1px hsl(349, 71%, 52%);
   color: hsl(349, 71%, 52%);
   right: 130px;
+
+  transition: ease-in-out all 0.15s;
+}
+
+.reset-score-button:hover {
+  box-shadow: 0px 0px 0px 3px hsl(349, 71%, 52%);
 }
 
 .rules-modal-header {
@@ -254,6 +261,8 @@ body {
   justify-content: space-evenly;
   align-items: center;
   gap: 40px;
+
+  animation: up-slide 0.3s ease-in forwards;
 }
 
 .result-container div p,
@@ -302,5 +311,38 @@ body {
     padding: 0;
     width: 140px;
     height: 140px;
+  }
+}
+
+/* animations */
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background-color: var(--scoreText);
+
+  animation: entry 1s ease-in forwards;
+}
+
+@keyframes entry {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+@keyframes up-slide {
+  from {
+    opacity: 0;
+    transform: translateY(70%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
   }
 }
