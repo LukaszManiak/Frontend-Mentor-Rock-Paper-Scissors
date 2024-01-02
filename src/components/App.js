@@ -143,8 +143,11 @@ function App() {
 
       {/* modal */}
       <RulesModal isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
+      {/* close modal button */}
       <RulesButton isOpen={isOpen} onOpenClose={handleOpenCloseClick} />
+      {/* reset button */}
       <ResetPointsButton onResetPoints={handleResetPoints} />
+      {/* dark bg */}
       {isOpen && <div className="dark-bg"></div>}
     </div>
   );
