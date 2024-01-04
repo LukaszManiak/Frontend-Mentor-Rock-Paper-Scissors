@@ -103,8 +103,6 @@ function App() {
     [housePick, playerPick]
   );
 
-  console.log(result);
-
   // setting localStorage score points
   useEffect(
     function () {
